@@ -22,6 +22,5 @@ Route::get('/home', 'HomeController@index')->name('home');
 Route::resource('posts', 'PostsController');
 
 Route::resource('group', 'GroupController');
-Route::get('ext', 'GroupController@ext');
 
 Route::resource('user', 'UserController');

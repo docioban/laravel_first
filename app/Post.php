@@ -10,6 +10,6 @@ class Post extends Model
     public $primaryKey = 'id';
 
     public function user() {
-        return $this->belongsTo('App\User');
+        return $this->belongsTo('App\User', 'user_id', 'post_id');
     }
 }

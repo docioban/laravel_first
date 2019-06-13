@@ -13,14 +13,12 @@ class CreatePostsTable extends Migration
      */
     public function up()
     {
-        Schema::dropIfExists('posts');
         Schema::create('posts', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('titlu');
             $table->mediumText('body');
-            $table->unsignedBigInteger('user_id');
+            $table->boolean('active');
             $table->timestamps();
-            $table->foreign('user_id')->references('id')->on('users');
         });
     }
 

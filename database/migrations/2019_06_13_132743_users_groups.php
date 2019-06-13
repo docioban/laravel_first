@@ -13,7 +13,6 @@ class UsersGroups extends Migration
      */
     public function up()
     {
-        Schema::dropIfExists('users_groups');
         Schema::create('users_groups', function (Blueprint $table) {
             $table->unsignedBigInteger('user_id');
             $table->unsignedBigInteger('group_id');

@@ -16,17 +16,28 @@ class PostsController extends Controller
      */
     public function index()
     {
-        $users = array();
-        $posts = array();
-        foreach (Group::with('users')->get() as $group)
-            foreach ($group->users as $user)
-                $users[] = $user->id;
-        $users = array_unique($users);
-        foreach($users as $user)
-            foreach (Post::where('user_id', $user)->get() as $post)
-                if($post->user_id == auth()->id() or $post->active == 1)
-                    $posts[] = $post;
+        //$groups = Group::find(1);//Group::with('users')->whereId(auth()->id())->get();
+        $users = Group::find(1)->users()->where('user_id', auth()->id())->get();
+        foreach ($users as $user) {
+            print_r($user->name);
+        }
+        $posts = User::find(1)->post()->whereIn('user_id', $users)->get();
+        foreach ($posts as $post) {
+            print_r($post);
+        }
         return view('pages.posts')->with('posts', $posts);
+//        exit;
+//        $users = array();
+//        $posts = array();
+////        foreach (Group::with('users')->get() as $group)
+////            foreach ($group->users as $user)
+////                $users[] = $user->id;
+//        $users = array_unique($users);
+//        foreach($users as $user)
+//            foreach (Post::find(1)->user()->where('id', $user)->get() as $post)
+//                if($post->user()->id == auth()->id() or $post->active == 1)
+//                    $posts[] = $post;
+//        return view('pages.posts')->with('posts', $posts);
     }
 
     /**
@@ -50,13 +61,13 @@ class PostsController extends Controller
         $post = new Post();
         $post->titlu = $request->input('title');
         $post->body = $request->input('body');
-        $post->user_id = auth()->user()->id;
         if ( ! $request->has('activ'))
             $post->active = '0';
         else if ($request->has('activ') == true)
             $post->active = '1';
         else
             $post->active = '0';
+        User::find(auth()->id())->post()->save($post);
         $post->save();
         return redirect('/posts')->with('success', 'Add Post with succes');
     }
@@ -82,7 +93,7 @@ class PostsController extends Controller
     public function edit($id)
     {
         $post = Post::find($id);
-        if ($post->user_id == auth()->id())
+        if ($post->user()->id == auth()->id())
             return view('pages.post_edit')->with('post', $post);
         else
             return redirect('posts')->with('error', 'You can not edit another post');
