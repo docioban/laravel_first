@@ -13,7 +13,7 @@
                 <div class="col-md-12 block_post">
                     <h3>{{$post->titlu}}</h3>
                     <p>{{$post->body}}</p>
-{{--                    <p>Createt at {{$post->created_at}} by {{$post->user->id}}</p>--}}
+                    <p>Createt at {{$post->created_at}} by {{$post->user_id}}</p>
                     <a class="btn btn-primary" href="/posts/{{$post->id}}">View Project</a>
                 </div>
             </div>

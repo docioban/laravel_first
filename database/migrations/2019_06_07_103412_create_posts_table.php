@@ -18,7 +18,9 @@ class CreatePostsTable extends Migration
             $table->string('titlu');
             $table->mediumText('body');
             $table->boolean('active');
+            $table->unsignedBigInteger('user_id');
             $table->timestamps();
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
         });
     }
 

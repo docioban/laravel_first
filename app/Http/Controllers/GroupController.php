@@ -42,7 +42,7 @@ class GroupController extends Controller
         $group = new Group();
         $group->name = $request->input('name');
         $group->save();
-        User::find(1)->groups()->attach($group);
+        User::find(auth()->id())->groups()->attach($group);
         return redirect('group')->with('success', 'Group was created');
     }
 
@@ -85,8 +85,11 @@ class GroupController extends Controller
             Group::find($id)->users()->attach($user);
             return redirect('group')->with('success', 'User was added');
         } else {
-            $group = Group::find($id);
-            $group->users()->where('id', auth()->id())->detach();
+            Group::find($id)->users()->detach(auth()->id());
+            if (count(Group::find($id)->users()->get()) == 0) {
+                Group::destroy($id);
+                return redirect('group')->with('success', 'You successful left the group and group was deleted');
+            }
         return redirect('group')->with('success', 'You successful left the group');
         }
     }

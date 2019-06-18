@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Group;
 use App\Http\Requests\UserUpdateRequest;
+use App\Post;
 use App\User;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -49,7 +50,8 @@ class UserController extends Controller
         $user->age = $request->input('age');
         $user->password = Hash::make($request->input('password'));
         $user->save();
-        $groups = $request->input('groups');
+        if ($groups = $request->input('groups'))
+//        $request->input('groups');
         foreach ($groups as $group)
             Group::find($group)->users()->attach($user);
         return redirect('user')->with('success', 'User was added with success');
@@ -95,9 +97,9 @@ class UserController extends Controller
         $user->age = $request->input('age');
         $user->password = Hash::make($request->input('password'));
         $user->groups()->detach();
-        $groups = $request->input('groups');
-        foreach ($groups as $group)
-            Group::find($group)->users()->attach($user);
+        if ($groups = $request->input('groups'))
+            foreach ($groups as $group)
+                Group::find($group)->users()->attach($user);
         $user->save();
         return redirect('user')->with('success', 'User was updated with success');
     }
@@ -112,7 +114,7 @@ class UserController extends Controller
     {
         $user = User::find($id);
         $user->groups()->detach();
-        $user->post()->delete();
+        Post::where('user_id', $id)->delete();
         $user->delete();
         return redirect('user')->with('success', 'User was deleted by success');
     }
