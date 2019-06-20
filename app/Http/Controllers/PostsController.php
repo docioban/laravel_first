@@ -29,7 +29,6 @@ class PostsController extends Controller
         $posts = Post::where('active', 1)
             ->whereIn('user_id', $users->pluck('id'))
             ->orWhere('user_id', auth()->id())->get();
-        print_r($posts);
         return view('pages.posts')->with('posts', $posts);
     }
 
@@ -45,7 +44,7 @@ class PostsController extends Controller
             })->whereHas('permissions', function ($q){
                 $q->where('name', 'post_make');
             })->count() == 0)
-            return redirect('posts')->with('error', 'You can not edit a post');
+            return redirect('posts')->with('error', 'You can not make a post');
         return view('pages.new_post')->with('success', 'Post was created');
     }
 
@@ -91,6 +90,12 @@ class PostsController extends Controller
      */
     public function edit($id)
     {
+        if (Group::whereHas('users', function ($q){
+                $q->where('user_id', auth()->id());
+            })->whereHas('permissions', function ($q){
+                $q->where('name', 'post_edit');
+            })->count() == 0)
+            return redirect('/posts')->with('error', 'You can not edit a post');
         $post = Post::find($id);
         if ($post->user_id == auth()->id())
             return view('pages.post_edit')->with('post', $post);
