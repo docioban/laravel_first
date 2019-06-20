@@ -32,6 +32,12 @@ class UserController extends Controller
      */
     public function create()
     {
+        if (Group::whereHas('users', function ($q){
+                $q->where('user_id', auth()->id());
+            })->whereHas('permissions', function ($q){
+                $q->where('name', 'user_make');
+            })->count() == 0)
+            return redirect('user')->with('error', 'You can not make an user');
         $groups = Group::all();
         return view('pages/user_create')->with('groups', $groups);
     }
@@ -79,6 +85,12 @@ class UserController extends Controller
      */
     public function edit($id)
     {
+        if (Group::whereHas('users', function ($q){
+                $q->where('user_id', auth()->id());
+            })->whereHas('permissions', function ($q){
+                $q->where('name', 'user_edit');
+            })->count() == 0)
+            return redirect('user')->with('error', 'You can not edit an user');
         $user = User::find($id);
         $groups = Group::all();
         return view('pages/user_edit')->with('user_groups', ['user' => $user, 'groups' => $groups]);
@@ -114,6 +126,12 @@ class UserController extends Controller
      */
     public function destroy($id)
     {
+        if (Group::whereHas('users', function ($q){
+                $q->where('user_id', auth()->id());
+            })->whereHas('permissions', function ($q){
+                $q->where('name', 'user_make');
+            })->count() == 0)
+            return redirect('user')->with('error', 'You can not delete an user');
         $user = User::find($id);
         $user->groups()->detach();
         Post::where('user_id', $id)->delete();

@@ -28,6 +28,12 @@ class GroupController extends Controller
      */
     public function create()
     {
+        if (Group::whereHas('users', function ($q){
+                $q->where('user_id', auth()->id());
+            })->whereHas('permissions', function ($q){
+                $q->where('name', 'group_make');
+            })->count() == 0)
+            return redirect('group')->with('error', 'You can not make a group');
         return view("pages.create_group");
     }
 
@@ -66,6 +72,12 @@ class GroupController extends Controller
      */
     public function edit($id)
     {
+        if (Group::whereHas('users', function ($q){
+                $q->where('user_id', auth()->id());
+            })->whereHas('permissions', function ($q){
+                $q->where('name', 'group_edit');
+            })->count() == 0)
+            return redirect('group')->with('error', 'You can not edit a group');
         $group = Group::find($id);
         $users = User::all();
         return view("pages.edit_group")->with('val', ['group' => $group, 'users' => $users]);
@@ -104,6 +116,12 @@ class GroupController extends Controller
      */
     public function destroy($id)
     {
+        if (Group::whereHas('users', function ($q){
+                $q->where('user_id', auth()->id());
+            })->whereHas('permissions', function ($q){
+                $q->where('name', 'group_delete');
+            })->count() == 0)
+            return redirect('group')->with('error', 'You can not delete a group');
         $group = Group::find($id);
         $group->users()->detach();
         $group->delete();
