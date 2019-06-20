@@ -15,12 +15,21 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Auth::routes();
+//Auth::routes();
 
-Route::get('/home', 'HomeController@index')->name('home');
 
 Route::resource('posts', 'PostsController');
 
 Route::resource('group', 'GroupController');
 
 Route::resource('user', 'UserController');
+
+//
+//Route::middleware('auth:api')->group( function () {
+//    Route::resource('posts', 'API\PostsController');
+//    Route::resource('group', 'API\GroupController');
+//    Route::resource('user', 'API\UserController');
+//});
+Auth::routes();
+
+Route::get('/home', 'HomeController@index')->name('home');

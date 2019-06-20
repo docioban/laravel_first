@@ -20,11 +20,11 @@
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
 </head>
 <body>
-<script>
-    $(document).ready(function() {
-        $('.mdb-select').materialSelect();
-    });
-</script>
+    <script>
+        $(document).ready(function() {
+            $('.mdb-select').materialSelect();
+        });
+    </script>
     <style>
         .block_post {
             background-color: #636b6f;

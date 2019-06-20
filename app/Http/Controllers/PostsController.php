@@ -7,6 +7,7 @@ use function foo\func;
 use Illuminate\Http\Request;
 use App\Post;
 use App\User;
+use App\Permission;
 
 class PostsController extends Controller
 {
@@ -17,12 +18,18 @@ class PostsController extends Controller
      */
     public function index()
     {
-        $user = User::find(auth()->id());
-        $user_query = User::whereHas('groups', function ($q) use ($user) {
-            $q->whereIn('id', $user->groups->pluck('id')->all());
+        $groups = Group::with('users')->whereHas('users', function ($q) {
+            $q->where('user_id', auth()->id());
+        })->whereHas('permissions', function ($q) {
+            $q->where('name', 'post_edit');
         })->get();
-        $posts = Post::whereIn('user_id', $user_query->pluck('id'))
-            ->orWhere('user_id', $user->id)->get();
+        $users = User::whereHas('groups', function ($q) use ($groups) {
+            $q->whereIn('id', $groups->pluck('id')->all());
+        })->get();
+        $posts = Post::where('active', 1)
+            ->whereIn('user_id', $users->pluck('id'))
+            ->orWhere('user_id', auth()->id())->get();
+        print_r($posts);
         return view('pages.posts')->with('posts', $posts);
     }
 

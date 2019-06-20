@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\View\View;
 use App\Http\Requests\UserNewRequest;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 
 class UserController extends Controller
 {
@@ -49,6 +50,7 @@ class UserController extends Controller
         $user->email = $request->input('email');
         $user->age = $request->input('age');
         $user->password = Hash::make($request->input('password'));
+        $user->api_token = Str::random(60);
         $user->save();
         if ($groups = $request->input('groups'))
 //        $request->input('groups');

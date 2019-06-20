@@ -91,6 +91,8 @@ class GroupController extends Controller
                 return redirect('group')->with('success', 'You successful left the group and group was deleted');
             }
         return redirect('group')->with('success', 'You successful left the group');
+
+
         }
     }
 
