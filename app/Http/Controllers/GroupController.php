@@ -17,8 +17,8 @@ class GroupController extends Controller
      */
     public function index()
     {
-        $user = User::find(auth()->id());
-        return view("pages.show_groups")->with('user', $user);
+        $groups = Group::with('users')->whereId(auth()->id())->get();
+        return view("pages.show_groups")->with('groups', $groups);
     }
 
     /**
@@ -79,8 +79,7 @@ class GroupController extends Controller
             })->count() == 0)
             return redirect('group')->with('error', 'You can not edit a group');
         $group = Group::find($id);
-        $users = User::all();
-        return view("pages.edit_group")->with('val', ['group' => $group, 'users' => $users]);
+        return view("pages.edit_group")->with('group', $group);
     }
 
     /**
@@ -92,20 +91,10 @@ class GroupController extends Controller
      */
     public function update(Request $request, $id)
     {
-        if ($request->has('email')) {
-            $user = User::where('email', '=', $request->input('email'))->first();
-            Group::find($id)->users()->attach($user);
-            return redirect('group')->with('success', 'User was added');
-        } else {
-            Group::find($id)->users()->detach(auth()->id());
-            if (count(Group::find($id)->users()->get()) == 0) {
-                Group::destroy($id);
-                return redirect('group')->with('success', 'You successful left the group and group was deleted');
-            }
+        $group = Group::find($id);
+        $group->name = $request->input('name');
+        $group->save();
         return redirect('group')->with('success', 'You successful left the group');
-
-
-        }
     }
 
     /**

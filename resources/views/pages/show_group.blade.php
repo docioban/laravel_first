@@ -2,15 +2,7 @@
 
 @section('content')
     <h2>{{$group->name}}</h2>
-    @if($group['users'])
-        <ul class="list-group list-group-flush">
-            @foreach($group->users as $us)
-                <li class="list-group-item">Name: {{$us->name}} Email: {{$us->email}}</li>
-            @endforeach
-        </ul>
-    @endif
-    <br><br>
-    <a class="btn btn-primary" href="/group/{{$group->id}}/edit" role="button">AddPerson</a>
+    <a class="btn btn-primary" href="/group/{{$group->id}}/edit" role="button">Edit</a>
     <br><br>
     {!!Form::open(['action' => ['GroupController@destroy', $group->id], 'method' => 'POST', 'class' => 'pull-right'])!!}
         {{Form::hidden('_method', 'DELETE')}}
