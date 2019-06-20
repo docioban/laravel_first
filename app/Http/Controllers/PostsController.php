@@ -18,7 +18,7 @@ class PostsController extends Controller
      */
     public function index()
     {
-        $groups = Group::with('users')->whereHas('users', function ($q) {
+        $groups = Group::whereHas('users', function ($q) {
             $q->where('user_id', auth()->id());
         })->whereHas('permissions', function ($q) {
             $q->where('name', 'post_edit');
@@ -40,6 +40,12 @@ class PostsController extends Controller
      */
     public function create()
     {
+        if (Group::whereHas('users', function ($q){
+                $q->where('user_id', auth()->id());
+            })->whereHas('permissions', function ($q){
+                $q->where('name', 'post_make');
+            })->count() == 0)
+            return redirect('posts')->with('error', 'You can not edit a post');
         return view('pages.new_post')->with('success', 'Post was created');
     }
 
@@ -62,7 +68,7 @@ class PostsController extends Controller
         else
             $post->active = '0';
         $post->save();
-        return redirect('/posts')->with('success', 'Add Post with succes');
+        return redirect('/posts')->with('success', 'Add Post with success');
     }
 
     /**
@@ -110,7 +116,7 @@ class PostsController extends Controller
         else
             $post->active = $request->input('activ');
         $post->save();
-        return redirect('/posts')->with('success', 'Was modified by succesful');
+        return redirect('/posts')->with('success', 'Was modified by successful');
     }
 
     /**
@@ -121,8 +127,14 @@ class PostsController extends Controller
      */
     public function destroy($id)
     {
+        if (Group::whereHas('users', function ($q){
+                $q->where('user_id', auth()->id());
+            })->whereHas('permissions', function ($q){
+                $q->where('name', 'post_delete');
+            })->count() == 0)
+            return redirect('/posts')->with('error', 'You can not delete a post');
         $post = Post::find($id);
         $post->delete();
-        return redirect('/posts')->with('success', 'Was succesful deleted');
+        return redirect('/posts')->with('success', 'Was successful deleted');
     }
 }
