@@ -92,7 +92,7 @@ class UserController extends Controller
             return redirect('user')->with('error', 'You can not edit an user');
         $user = User::find($id);
         $groups = Group::all();
-        return view('pages/user_edit')->with('user_groups', ['user' => $user, 'groups' => $groups]);
+        return view('pages/user_edit')->with(['user' => $user, 'groups' => $groups]);
     }
 
     /**

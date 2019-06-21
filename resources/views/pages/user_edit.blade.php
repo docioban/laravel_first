@@ -2,14 +2,14 @@
 
 @section('content')
     <h2>Edit</h2>
-    {!! Form::open(['action' => ['UserController@update', $user_groups['user']->id], 'method' => 'POST', 'enctype' => 'multipart/form-data']) !!}
+    {!! Form::open(['action' => ['UserController@update', $user->id], 'method' => 'POST', 'enctype' => 'multipart/form-data']) !!}
         <div class="form-group">
             {{Form::label('name', 'Name')}}
-            {{Form::text('name', $user_groups['user']->name, ['class' => 'form-control', 'placeholder' => 'Name'])}}
+            {{Form::text('name', $user->name, ['class' => 'form-control', 'placeholder' => 'Name'])}}
         </div>
         <div class="form-group">
             {{Form::label('email', 'Email')}}
-            {{Form::text('email', $user_groups['user']->email, ['class' => 'form-control', 'placeholder' => 'Email'])}}
+            {{Form::text('email', $user->email, ['class' => 'form-control', 'placeholder' => 'Email'])}}
         </div>
         <div class="form-group">
             {{Form::label('age', 'Age')}}
@@ -17,7 +17,7 @@
             for($i = 12; $i < 80; $i++)
                 $age[] = $i
             ?>
-            {!! Form::select('age', $age, $user_groups['user']->id) !!}
+            {!! Form::select('age', $age, $user->id) !!}
         </div>
         <div class="form-group">
             {{ Form::label('OldPassword', 'Old Password') }}
@@ -33,8 +33,8 @@
         </div>
         <div class="form-group">
             <select name="groups[]" class="mdb-select colorful-select dropdown-primary md-form" multiple>
-                @foreach($user_groups['groups'] as $group)
-                    @if(in_array($group->id, $user_groups['user']->groups->pluck('id')->toArray()))
+                @foreach($groups as $group)
+                    @if(in_array($group->id, $user->groups->pluck('id')->toArray()))
                         <option value="{{$group->id}}" selected>{{$group->name}}</option>
                     @else
                         <option value="{{$group->id}}">{{$group->name}}</option>
