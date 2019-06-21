@@ -25,6 +25,22 @@ class UserController extends Controller
     }
 
     /**
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function create()
+    {
+        if (Group::whereHas('users', function ($q) {
+                $q->where('user_id', auth()->id());
+            })->whereHas('permissions', function ($q) {
+                $q->where('name', 'user_make');
+            })->count() == 0)
+            return response()->json(['permission' => 'false']);
+        return response()->json(['permission' => 'true']);
+    }
+
+    /**
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
@@ -58,6 +74,23 @@ class UserController extends Controller
     }
 
     /**
+     * Show the form for editing the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function edit($id)
+    {
+        if (Group::whereHas('users', function ($q) {
+                $q->where('user_id', auth()->id());
+            })->whereHas('permissions', function ($q) {
+                $q->where('name', 'user_edit');
+            })->count() == 0)
+            return response()->json(['permission' => 'false']);
+        return response()->json(['permission' => 'true']);
+    }
+
+    /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
@@ -70,7 +103,8 @@ class UserController extends Controller
         $user->name = $request->input('name');
         $user->email = $request->input('email');
         $user->age = $request->input('age');
-        $user->password = Hash::make($request->input('password'));
+        if ($request->input('password'))
+            $user->password = Hash::make($request->input('password'));
         $user->groups()->detach();
         if ($groups = $request->input('groups'))
             foreach ($groups as $group)
@@ -87,10 +121,16 @@ class UserController extends Controller
      */
     public function destroy($id)
     {
+        if (Group::whereHas('users', function ($q){
+                $q->where('user_id', auth()->id());
+            })->whereHas('permissions', function ($q){
+                $q->where('name', 'user_make');
+            })->count() == 0)
+            return response()->json(['permission' => 'false']);
         $user = User::find($id);
         $user->groups()->detach();
         Post::where('user_id', $id)->delete();
         $user->delete();
-        return response()->json('User was deleted by success');
+        return response()->json(['message' => 'User was deleted by success']);
     }
 }

@@ -59,9 +59,8 @@ class UserController extends Controller
         $user->api_token = Str::random(60);
         $user->save();
         if ($groups = $request->input('groups'))
-//        $request->input('groups');
-        foreach ($groups as $group)
-            Group::find($group)->users()->attach($user);
+            foreach ($groups as $group)
+                Group::find($group)->users()->attach($user);
         return redirect('user')->with('success', 'User was added with success');
     }
 

@@ -24,12 +24,13 @@ Route::resource('group', 'GroupController');
 
 Route::resource('user', 'UserController');
 
-//
-//Route::middleware('auth:api')->group( function () {
-//    Route::resource('posts', 'API\PostsController');
-//    Route::resource('group', 'API\GroupController');
-//    Route::resource('user', 'API\UserController');
-//});
+
+Route::middleware('auth:api')->group( function () {
+    Route::resource('api/posts', 'API\PostsController');
+    Route::resource('api/group', 'API\GroupController');
+    Route::resource('api/user', 'API\UserController');
+});
+
 Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');

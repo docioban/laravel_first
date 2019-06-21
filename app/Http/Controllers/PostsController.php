@@ -20,8 +20,6 @@ class PostsController extends Controller
     {
         $groups = Group::whereHas('users', function ($q) {
             $q->where('user_id', auth()->id());
-        })->whereHas('permissions', function ($q) {
-            $q->where('name', 'post_edit');
         })->get();
         $users = User::whereHas('groups', function ($q) use ($groups) {
             $q->whereIn('id', $groups->pluck('id')->all());

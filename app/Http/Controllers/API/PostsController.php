@@ -18,16 +18,32 @@ class PostsController extends Controller
      */
     public function index()
     {
-        print 'agdfsgadhdsf'.auth()->user()->id;
-        if (($user = User::find(auth()->id())) == null)
-            return response()->json('No user');
-//            return redirect('login');
-        $user_query = User::whereHas('groups', function ($q) use ($user) {
-            $q->whereIn('id', $user->groups->pluck('id')->all());
+        $groups = Group::whereHas('users', function ($q) {
+            $q->where('user_id', auth()->id());
         })->get();
-        $posts = Post::whereIn('user_id', $user_query->pluck('id'))
-            ->orWhere('user_id', $user->id)->get();
+        $users = User::whereHas('groups', function ($q) use ($groups) {
+            $q->whereIn('id', $groups->pluck('id')->all());
+        })->get();
+        $posts = Post::where('active', 1)
+            ->whereIn('user_id', $users->pluck('id'))
+            ->orWhere('user_id', auth()->id())->get();
         return response()->json($posts);
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function create()
+    {
+        if (Group::whereHas('users', function ($q){
+                $q->where('user_id', auth()->id());
+            })->whereHas('permissions', function ($q){
+                $q->where('name', 'post_make');
+            })->count() == 0)
+            return response()->json(['permission' => 'false']);
+        return response()->json(['permission' => 'true']);
     }
 
     /**
@@ -65,6 +81,23 @@ class PostsController extends Controller
     }
 
     /**
+     * Show the form for editing the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function edit()
+    {
+        if (Group::whereHas('users', function ($q){
+                $q->where('user_id', auth()->id());
+            })->whereHas('permissions', function ($q){
+                $q->where('name', 'post_edit');
+            })->count() == 0)
+            return response()->json(['permission' => 'false']);
+        return response()->json(['permission' => 'true']);
+    }
+
+    /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
@@ -93,8 +126,14 @@ class PostsController extends Controller
      */
     public function destroy($id)
     {
+        if (Group::whereHas('users', function ($q){
+                $q->where('user_id', auth()->id());
+            })->whereHas('permissions', function ($q){
+                $q->where('name', 'post_delete');
+            })->count() == 0)
+            return response()->json(['permission' => 'false']);
         $post = Post::find($id);
         $post->delete();
-        return response()->json('Was succesful deleted');
+        return response()->json(['message' => 'Was succesful deleted']);
     }
 }
