@@ -92,6 +92,11 @@ class GroupController extends Controller
     {
         $group = Group::find($id);
         $group->name = $request->input('name');
+        $group->permissions()->detach();
+        if ($permissions = $request->input('permissions'))
+            foreach ($permissions as $permission) {
+                $group->permissions()->attach($permission);
+            }
         $group->save();
         return response()->json($group);
     }

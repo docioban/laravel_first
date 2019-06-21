@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Group;
+use App\Permission;
 use App\User;
 use App\Legatura;
 use Illuminate\Http\Request;
@@ -79,7 +80,8 @@ class GroupController extends Controller
             })->count() == 0)
             return redirect('group')->with('error', 'You can not edit a group');
         $group = Group::find($id);
-        return view("pages.edit_group")->with('group', $group);
+        $permissions = Permission::all();
+        return view("pages.edit_group")->with(['group' => $group, 'permissions' => $permissions]);
     }
 
     /**
@@ -93,6 +95,11 @@ class GroupController extends Controller
     {
         $group = Group::find($id);
         $group->name = $request->input('name');
+        $group->permissions()->detach();
+        if ($permissions = $request->input('permissions'))
+            foreach ($permissions as $permission) {
+                $group->permissions()->attach($permission);
+            }
         $group->save();
         return redirect('group')->with('success', 'You successful left the group');
     }
